@@ -15,7 +15,7 @@ Para ejecutar esta herramienta se debe crear un directorio con cualquier nombre 
 
 
 <div align="center">
-    <img src="./Utils/ImagesDir.png" height=200 width=300>
+    <img src="./Utils/ImagesDir.png" height=200 width=300> <br>
     <figcaption>Directorio con las imágenes</figcaption>
 </div>
 
