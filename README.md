@@ -27,7 +27,7 @@ Una vez con las imágenes cargadas en la raíz del proyecto, abrimos un _termina
 
 En primera instancia, el programa nos preguntará cual es el directorio en donde están alojadas las imágenes, aquí debemos ingresar nuestro directorio creado en el paso anterior:
 
-- Como consejo, ingresar el directorio con el siguiente formato: `./nombre_carpeta`, como se ilustra en la siguiente imagen: 
+- Como consejo, ingresar el directorio con el siguiente formato: `./nombre_carpeta/`, como se ilustra en la siguiente imagen: 
 
 <br>
 
@@ -39,4 +39,4 @@ En primera instancia, el programa nos preguntará cual es el directorio en donde
 
 <br>
 
-Posteriormente, se comenzara con la eliminación de las imágenes duplicadas o similares.
+Posteriormente, se comenzará con la eliminación de las imágenes duplicadas o similares.
