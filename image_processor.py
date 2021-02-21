@@ -62,23 +62,26 @@ class ImageProcessor:
 			pivot_image = np.asarray(file)
 			pivot_image = self.min_max_norm(pivot_image)
 			print("Pivot_image: {}".format(files[idx]), '\n')
-			for i in range(idx, len(files), 1): # Comparamos desde el pivote en adelante
-				if ( i < len(files)):
-					#print('Iterador i: {}'.format(i))
-					img_name = files[i]
-					#print('\nLargo arreglo pil_files: ',len(pil_files))
-					#print('Largo arreglo files: ',len(files), '\n')
-					print("Comparando imagen {} con {} !".format(files[idx], img_name), '\n')
-					img_np = np.asarray(pil_files[i])
-					img_np = self.min_max_norm(img_np)
-					result, distance = self.compare_images(pivot_image.flatten(), img_np.flatten())
-					if((idx != i) and (result == True)):
-						print('-'*30)
-						print('Removiendo imagen ', img_name)
-						print('-'*30, '\n')
-						os.remove(directory+img_name)
-						del files[i]
-						del pil_files[i]
+			rango = len(files)
+			i = idx
+			while i < rango: # Comparamos desde el pivote en adelante
+				#print('Iterador i: {}'.format(i))
+				img_name = files[i]
+				#print('\nLargo arreglo pil_files: ',len(pil_files))
+				#print('Largo arreglo files: ',len(files), '\n')
+				print("Comparando imagen {} con {} !".format(files[idx], img_name), '\n')
+				img_np = np.asarray(pil_files[i])
+				img_np = self.min_max_norm(img_np)
+				result, distance = self.compare_images(pivot_image.flatten(), img_np.flatten())
+				if((idx != i) and (result == True)):
+					print('-'*30)
+					print('Removiendo imagen ', img_name)
+					print('-'*30, '\n')
+					os.remove(directory+img_name)
+					del files[i]
+					del pil_files[i]
+					rango = len(files)
+				i+=1
 
 
 	def delete_repeated_images(self):
