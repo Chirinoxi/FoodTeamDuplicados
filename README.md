@@ -13,7 +13,6 @@ Para ejecutar este código se necesitan las siguientes librerías:
 
 Para ejecutar esta herramienta se debe crear un directorio con cualquier nombre (p.ej `Images`) en donde se encuentren las imágenes separadas en _**distintos subdirectorios**_, como se muestra en la figura:
 
-
 <div align="center">
     <img src="./Utils/ImagesDir.png" height=200 width=300> <br>
     <figcaption>Directorio con las imágenes</figcaption>
