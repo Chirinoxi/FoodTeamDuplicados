@@ -42,7 +42,7 @@ class ImageProcessor:
 	def resize_images(self, images, directory):
 		new_images = images.copy() #Creamos una copia de la variable images.
 		new_images = list(map(lambda x: Image.open(directory+x).convert('RGB'), images)) # Convertimos todas las imágenes a formato PIL con 3 canales.
-		new_images = list(map(lambda x: x.resize((300, 300)), new_images)) # Cambiamos el tamaño de todas las imágenes a 300x300.
+		new_images = list(map(lambda x: x.resize((30, 30)), new_images)) # Cambiamos el tamaño de todas las imágenes a 300x300.
 		return new_images
 
 	def min_max_norm(self, data):
