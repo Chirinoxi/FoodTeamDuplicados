@@ -1,5 +1,6 @@
 import os
 import cv2
+import shutil
 import numpy as np
 from PIL import Image
 
@@ -23,7 +24,7 @@ class ImageProcessor:
 	def compare_images(self, image1, image2):
 		is_equal = False
 		distance = self.manhattan_distance(image1, image2)
-		if(distance <= 0.15 or distance >= 0.95):
+		if(distance <= 0.1	):
 			is_equal = True
 			
 		return (is_equal, distance)
@@ -31,18 +32,32 @@ class ImageProcessor:
 	def rename_files(self, directory):
 		files = sorted(os.listdir(directory))
 		for i in range(len(files)):
-			file_info = files[i].split('.')
-			if (i >= 99):
-				os.rename(f'{directory}{files[i]}', f'{directory}image_{i+1}.{file_info[-1]}')
-			elif (i >= 9):
-				os.rename(f'{directory}{files[i]}', f'{directory}image_0{i+1}.{file_info[-1]}')
+			if(os.path.isdir(directory+files[i])):
+				continue
 			else:
-				os.rename(f'{directory}{files[i]}', f'{directory}image_00{i+1}.{file_info[-1]}')
+				file_info = files[i].split('.')
+				if (i >= 99):
+					os.rename(f'{directory}{files[i]}', f'{directory}image_foodteam_{i+1}.{file_info[-1]}')
+				elif (i >= 9):
+					os.rename(f'{directory}{files[i]}', f'{directory}image_foodteam_0{i+1}.{file_info[-1]}')
+				else:
+					os.rename(f'{directory}{files[i]}', f'{directory}image_foodteam_00{i+1}.{file_info[-1]}')
 
 	def resize_images(self, images, directory):
-		new_images = images.copy() #Creamos una copia de la variable images.
-		new_images = list(map(lambda x: Image.open(directory+x).convert('RGB'), images)) # Convertimos todas las imágenes a formato PIL con 3 canales.
-		new_images = list(map(lambda x: x.resize((30, 30)), new_images)) # Cambiamos el tamaño de todas las imágenes a 300x300.
+
+		files = os.listdir(directory)
+		new_images = []
+		for i in range(len(files)):
+			if(os.path.isdir(directory + files[i])):
+				continue
+			else:
+				img = Image.open(directory+files[i]).convert('RGB')
+				img = img.resize((30, 30))
+				new_images.append(img)
+
+		#new_images = images.copy() #Creamos una copia de la variable images.
+		#new_images = list(map(lambda x: Image.open(directory+x).convert('RGB'), images)) # Convertimos todas las imágenes a formato PIL con 3 canales.
+		#new_images = list(map(lambda x: x.resize((30, 30)), new_images)) # Cambiamos el tamaño de todas las imágenes a 300x300.
 		return new_images
 
 	def min_max_norm(self, data):
@@ -53,36 +68,53 @@ class ImageProcessor:
 		norm_img =  (img - np.mean(img, axis=0)) /(np.std(img, axis=0))
 		return norm_img
 
+	def delete_directories(self, files, directory):
+		arreglo = files.copy()
+		meta = len(arreglo)
+		i = 0;
+		while (i < meta):
+			if (os.path.isdir(directory+arreglo[i])):
+				del arreglo[i]
+			meta = len(arreglo)
+			i += 1
+		return arreglo
+
+
 	def delete_images(self, directory):
+
+		self.delete_corrupted_images(directory)
 		files = sorted(os.listdir(directory)) # Leemos los archivos el directorio
-		pil_files = self.resize_images(files, directory) # Creamos un arreglo con los archivos en formato PIL y con dimensionsionalidad 300x300		
+		files = self.delete_directories(files, directory)
+		splitted_dir = directory.split('/')
+		current_food = splitted_dir[-2]
+		pil_files = self.resize_images(files, directory) # Creamos un arreglo con los archivos en formato PIL y con dimensionsionalidad 300x300
+
 		for (idx, file) in enumerate(pil_files): # Podríamos recorrer pil_files
-			print('\nLargo arreglo pil_files: ', len(pil_files))
-			print('Largo arreglo files: ', len(files), '\n')
+			print("Imagen pivote: ", files[idx])
 			pivot_image = np.asarray(file)
 			pivot_image = self.min_max_norm(pivot_image)
-			print("Pivot_image: {}".format(files[idx]), '\n')
 			rango = len(files)
 			i = idx
-			while i < rango: # Comparamos desde el pivote en adelante
-				#print('Iterador i: {}'.format(i))
-				img_name = files[i]
-				#print('\nLargo arreglo pil_files: ',len(pil_files))
-				#print('Largo arreglo files: ',len(files), '\n')
-				print("Comparando imagen {} con {} !".format(files[idx], img_name), '\n')
-				img_np = np.asarray(pil_files[i])
-				img_np = self.min_max_norm(img_np)
-				result, distance = self.compare_images(pivot_image.flatten(), img_np.flatten())
-				if((idx != i) and (result == True)):
-					print('-'*30)
-					print('Removiendo imagen ', img_name)
-					print('-'*30, '\n')
-					os.remove(directory+img_name)
-					del files[i]
-					del pil_files[i]
-					rango = len(files)
+			while i < rango:
+				if (not os.path.isdir(directory+files[i])):
+					img_name = files[i]
+					deleted_imgs_dir = directory + current_food + "_eliminados"
+					full_img_name = deleted_imgs_dir + "/" + img_name
+					img_np = np.asarray(pil_files[i])
+					img_np = self.min_max_norm(img_np)
+					result, distance = self.compare_images(pivot_image.flatten(), img_np.flatten())
+					if((idx != i) and (result == True)):
+						if(not os.path.exists(deleted_imgs_dir)):
+							os.mkdir(deleted_imgs_dir)
+							print("Directorio creado {} !".format(deleted_imgs_dir))
+							
+						print("Eliminando imagen: ", full_img_name)
+						shutil.move(directory+img_name, directory+current_food+"_eliminados/"+img_name)
+						#os.remove(directory+img_name) # Si queremos eliminar la imagen descomentar esta línea
+						del files[i]
+						del pil_files[i]
+						rango = len(files)
 				i+=1
-
 
 	def delete_repeated_images(self):
 		files = sorted(os.listdir(self.current_dir)) # Leemos los archivos el directorio
@@ -95,3 +127,18 @@ class ImageProcessor:
 			else:
 				continue
 
+	def delete_corrupted_images (self, directory):
+		files = os.listdir(directory);
+
+		for file in files:
+			if (os.path.isdir(directory + file)):
+				continue
+			else:
+				try:
+					img = Image.open(directory+file)
+					img.verify() #
+				except Exception:
+					print("File: ", file)
+					os.remove(directory+file) # Si queremos eliminar la imagen descomentar esta línea
+
+		print("Eliminamos imagenes corruptas !")
