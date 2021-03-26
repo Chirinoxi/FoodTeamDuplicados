@@ -124,10 +124,15 @@ class ImageProcessor:
 		folders = sorted(os.listdir(directory))
 		for i in range(len(folders)):
 			curr_folder_name = folders[i]
-			current_folder_path = directory + curr_folder_name + "/"
-			folder_images = sorted(os.listdir(current_folder_path))
+			current_folder_path = os.path.join(directory, curr_folder_name)
+			if(os.path.isdir(current_folder_path)):
+				folder_images = sorted(os.listdir(current_folder_path))
+			else:
+				folder_images = folders
+				current_folder_path = directory
+
 			for (idx, file) in enumerate(folder_images):
-				full_file_name = current_folder_path + file
+				full_file_name = os.path.join(current_folder_path, file)
 				if(os.path.isdir(full_file_name)):
 					continue
 				else:
