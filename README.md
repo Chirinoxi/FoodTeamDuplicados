@@ -2,6 +2,12 @@
 
 Este código esta destinado a la eliminación de imágenes repetidas o que sean similares en un 10% entre sí. Para calcular este porcentaje se normalizan las imágenes mediante *min max normalization* y luego mediante la distancia de manhattan se calcula la similitud entre dos imágenes.
 
+## Min Max Normalization
+
+La normalización de una entrada $x$ se realiza de la siguiente manera:
+
+$$\Large x_{norm} = \frac{x - min(x)}{max(x) - min(x)}$$
+
 ## Consideraciones
 
 Para ejecutar este código se necesitan las siguientes librerías:
