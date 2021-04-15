@@ -12,15 +12,21 @@ class ImageProcessor:
 	def manhattan_distance(self, x, y):
 		""" Calcula la 'distancia de manhattan' entre dos vectores
 
-			Parametros:
-			----------
-			
+			Parámetros:
+			-----------
 				- x: Primer vector 
 				- y: Segundo vector
 		"""
 		return (sum(abs(a-b) for a,b in zip(x,y)))/len(x)
 
 	def compare_images(self, image1, image2):
+		""" Compara dos imágenes en formato numpy, utilizando la métrica L1 (distancia de manhattan)
+
+			Parámetros:
+			-----------	
+				- image1: Primera imagen (en formato numpy) 
+				- image2: Segunda imagen (en formato numpy) 
+		"""
 		is_equal = False
 		distance = self.manhattan_distance(image1, image2)
 		if(distance <= 0.15):
@@ -29,6 +35,12 @@ class ImageProcessor:
 		return (is_equal, distance)
 
 	def rename_files(self, directory):
+		""" Renombra los ficheros de un directorio
+
+			Parámetros:
+			-----------
+			- directory (string): directorio en donde se encuentran los ficheros.
+		"""		
 		files = sorted(os.listdir(directory))
 		for i in range(len(files)):
 			if(os.path.isdir(directory+files[i])):
@@ -43,7 +55,17 @@ class ImageProcessor:
 					os.rename(f'{directory}{files[i]}', f'{directory}image_foodteam_00{i+1}.{file_info[-1]}')
 
 	def resize_images(self, images, directory):
+		""" Cambia el tamaño de una imagen, para retornar un arreglo con esta últimas con dimensionalidad 30x30.
 
+			Parámetros:
+			----------
+				images (numpy): imagenes en formato numpy
+				directory (string): directorio en donde se encuentran las imágenes
+
+			Retorna:
+			--------
+				new_images: lista con las imágenes redimensionadas en formato PIL
+		"""		
 		files = os.listdir(directory)
 		new_images = []
 		for i in range(len(files)):
@@ -56,14 +78,45 @@ class ImageProcessor:
 		return new_images
 
 	def min_max_norm(self, data):
+		"""Aplica normalización min_max a un input
+
+			Parámetros:
+			-----------
+				data: entrada que deseamos normalizar
+
+			Retorna:
+			--------
+				norm_data: corresponde al input normalizado
+		"""		
 		norm_data = (data - np.min(data))/(np.max(data) - np.min(data))
 		return norm_data	 	
 
 	def normalize (self, img):
+		"""Aplica normalización z-score a un input
+
+			Parámetros:
+			-----------
+				data: entrada que deseamos normalizar
+
+			Retorna:
+			--------
+				norm_data: corresponde al input normalizado
+		"""	
 		norm_img =  (img - np.mean(img, axis=0)) /(np.std(img, axis=0))
 		return norm_img
 
 	def delete_directories(self, files, directory):
+		""" Elimina los directorios dentro de un directorio específico
+
+			Parámetros:
+			-----------
+				directory: directorio de interés
+				files:     lista que contiene los ficheros
+
+			Retorna:
+			--------
+				arreglo: lista identica a parámetro files, pero no contiene directorios
+		"""	
 		arreglo = files.copy()
 		meta = len(arreglo)
 		i = 0;
@@ -74,8 +127,13 @@ class ImageProcessor:
 			i += 1
 		return arreglo
 
-
 	def delete_images(self, directory):
+		""" Elimina los directorio dentro de un directorio en específico.
+
+			Parámetros:
+			-----------
+				directory: directorio que contiene las imágened
+		"""	
 		files = sorted(os.listdir(directory)) # Leemos los archivos el directorio
 		files = self.delete_directories(files, directory) # Eliminamos los directorios del arreglo
 		splitted_dir = directory.split('/')
@@ -108,6 +166,8 @@ class ImageProcessor:
 				i+=1
 
 	def delete_repeated_images(self):
+		""" Elimina las imágenes repetidas en un directorio, recorre las carpetas dentro del directorio principal.
+		"""	
 		self.delete_not_images(self.current_dir) # eliminamos los archivos que NO son imágenes
 		files = sorted(os.listdir(self.current_dir)) # Leemos los archivos el directorio
 		for file in files:
@@ -121,6 +181,12 @@ class ImageProcessor:
 				continue
 
 	def delete_not_images(self, directory):
+		""" Elimina los ficheros que no posean extensión de imagen.
+
+			Parámetros:
+			-----------
+				- directory: directorio que contiene los ficheros.
+		"""	
 		folders = sorted(os.listdir(directory))
 		for i in range(len(folders)):
 			curr_folder_name = folders[i]
@@ -143,6 +209,12 @@ class ImageProcessor:
 						os.remove(full_file_name)
 
 	def delete_corrupted_images (self, directory):
+		""" Elimina las imágenes corruptas en un directorio.
+
+			Parámetros:
+			-----------
+				- directory: directorio que contiene los ficheros.
+		"""	
 		files = os.listdir(directory);
 		for file in files:
 			if (os.path.isdir(directory + file)):
