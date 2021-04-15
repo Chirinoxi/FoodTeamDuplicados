@@ -4,9 +4,14 @@ Este código esta destinado a la eliminación de imágenes repetidas o que sean 
 
 ## Min Max Normalization
 
-La normalización de una entrada $x$ se realiza de la siguiente manera:
+La normalización de una entrada x se realiza de la siguiente manera:
 
-$$\Large x_{norm} = \frac{x - min(x)}{max(x) - min(x)}$$
+<div align="center">
+    <img src="./Utils/minmaxnorm.png" height=150 width=500> <br>
+    <figcaption>Fórmula normalización</figcaption>
+</div>
+
+<br>
 
 ## Consideraciones
 
