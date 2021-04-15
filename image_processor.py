@@ -155,8 +155,8 @@ class ImageProcessor:
 					result, distance = self.compare_images(pivot_image.flatten(), img_np.flatten())
 					if((idx != i) and (result == True)):
 						if(not os.path.exists(deleted_imgs_dir)):
+							print("Creando directorio {} !".format(deleted_imgs_dir))
 							os.mkdir(deleted_imgs_dir)
-							print("Directorio creado {} !".format(deleted_imgs_dir))
 						print("Eliminando imagen: ", full_img_name)
 						shutil.move(directory+img_name, directory+current_food+"_eliminados/"+img_name)
 						#os.remove(directory+img_name) # Si queremos eliminar la imagen descomentar esta línea
