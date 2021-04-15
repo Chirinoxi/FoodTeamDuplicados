@@ -10,22 +10,22 @@ class ImageProcessor:
 		self.current_dir = images_dir	
 
 	def manhattan_distance(self, x, y):
-		""" Calcula la 'distancia de manhattan' entre dos vectores
+		""" Calcula la 'distancia de manhattan' entre dos vectores.
 
 			Parámetros:
 			-----------
-				- x: Primer vector 
-				- y: Segundo vector
+				- x (numpy): Primer vector.
+				- y (numpy): Segundo vector.
 		"""
 		return (sum(abs(a-b) for a,b in zip(x,y)))/len(x)
 
 	def compare_images(self, image1, image2):
-		""" Compara dos imágenes en formato numpy, utilizando la métrica L1 (distancia de manhattan)
+		""" Compara dos imágenes en formato numpy, utilizando la métrica L1 (distancia de manhattan).
 
 			Parámetros:
 			-----------	
-				- image1: Primera imagen (en formato numpy) 
-				- image2: Segunda imagen (en formato numpy) 
+				- image1 (numpy): Primera imagen. 
+				- image2 (numpy): Segunda imagen. 
 		"""
 		is_equal = False
 		distance = self.manhattan_distance(image1, image2)
@@ -64,7 +64,7 @@ class ImageProcessor:
 
 			Retorna:
 			--------
-				new_images: lista con las imágenes redimensionadas en formato PIL
+				new_images (list): lista con las imágenes redimensionadas en formato PIL
 		"""		
 		files = os.listdir(directory)
 		new_images = []
@@ -82,11 +82,11 @@ class ImageProcessor:
 
 			Parámetros:
 			-----------
-				data: entrada que deseamos normalizar
+				data (numpy): entrada que deseamos normalizar
 
 			Retorna:
 			--------
-				norm_data: corresponde al input normalizado
+				norm_data (numpy): corresponde al input normalizado
 		"""		
 		norm_data = (data - np.min(data))/(np.max(data) - np.min(data))
 		return norm_data	 	
@@ -96,11 +96,11 @@ class ImageProcessor:
 
 			Parámetros:
 			-----------
-				data: entrada que deseamos normalizar
+				img (numpy): entrada que deseamos normalizar
 
 			Retorna:
 			--------
-				norm_data: corresponde al input normalizado
+				norm_data (numpy): corresponde al input normalizado
 		"""	
 		norm_img =  (img - np.mean(img, axis=0)) /(np.std(img, axis=0))
 		return norm_img
@@ -110,12 +110,12 @@ class ImageProcessor:
 
 			Parámetros:
 			-----------
-				directory: directorio de interés
-				files:     lista que contiene los ficheros
+				directory (string): directorio de interés
+				files (list):     lista que contiene los ficheros
 
 			Retorna:
 			--------
-				arreglo: lista identica a parámetro files, pero no contiene directorios
+				arreglo (list): lista identica a parámetro files, pero no contiene directorios
 		"""	
 		arreglo = files.copy()
 		meta = len(arreglo)
@@ -132,7 +132,7 @@ class ImageProcessor:
 
 			Parámetros:
 			-----------
-				directory: directorio que contiene las imágened
+				directory (string): directorio que contiene las imágened
 		"""	
 		files = sorted(os.listdir(directory)) # Leemos los archivos el directorio
 		files = self.delete_directories(files, directory) # Eliminamos los directorios del arreglo
@@ -185,7 +185,7 @@ class ImageProcessor:
 
 			Parámetros:
 			-----------
-				- directory: directorio que contiene los ficheros.
+				- directory (string): directorio que contiene los ficheros.
 		"""	
 		folders = sorted(os.listdir(directory))
 		for i in range(len(folders)):
@@ -213,7 +213,7 @@ class ImageProcessor:
 
 			Parámetros:
 			-----------
-				- directory: directorio que contiene los ficheros.
+				- directory (string): directorio que contiene los ficheros.
 		"""	
 		files = os.listdir(directory);
 		for file in files:
