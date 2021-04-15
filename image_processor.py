@@ -23,7 +23,7 @@ class ImageProcessor:
 	def compare_images(self, image1, image2):
 		is_equal = False
 		distance = self.manhattan_distance(image1, image2)
-		if(distance <= 0.1	):
+		if(distance <= 0.15):
 			is_equal = True
 			
 		return (is_equal, distance)
@@ -113,7 +113,7 @@ class ImageProcessor:
 		for file in files:
 			element = self.current_dir+file+'/'
 			if (os.path.isdir(element)):
-				#self.rename_files(element)
+				self.rename_files(element)
 				print("Eliminando imágenes del directorio: ", element)
 				self.delete_corrupted_images(element)
 				self.delete_images(element)
