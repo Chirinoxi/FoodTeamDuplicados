@@ -29,7 +29,9 @@ class ImageProcessor:
 		"""
 		is_equal = False
 		distance = self.manhattan_distance(image1, image2)
-		if(distance <= 0.15):
+		
+		# UMBRAL ====> 5%
+		if(distance <= 0.05):
 			is_equal = True
 			
 		return (is_equal, distance)
