@@ -1,6 +1,8 @@
 /Images
-/Imagenes
 /ImagesTest
+/Tests
+/Procesadas
+/Procesadas2P
 /__pycache__
 /Image_similarity.ipynb
 /.ipynb_checkpoints
@@ -8,3 +10,7 @@
 /Imagenes-20210313T170842Z-001
 /Finales
 /Imagenes_Profe
+/Images_2P
+/Images_5P
+/Images_10P
+.vscode

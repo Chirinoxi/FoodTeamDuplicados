@@ -1,6 +1,7 @@
 import os
 import cv2
 import shutil
+import pytesseract
 import numpy as np
 from PIL import Image
 
@@ -30,8 +31,8 @@ class ImageProcessor:
 		is_equal = False
 		distance = self.manhattan_distance(image1, image2)
 		
-		# UMBRAL ====> 5%
-		if(distance <= 0.05):
+		# UMBRAL ====> 2%
+		if(distance <= 0.02):
 			is_equal = True
 			
 		return (is_equal, distance)
@@ -129,7 +130,21 @@ class ImageProcessor:
 			i += 1
 		return arreglo
 
-	def delete_images(self, directory):
+	def gotText(self, image, conf=r'-l eng -psm 11'):
+		img_text = pytesseract.image_to_string(image, config=conf)
+		content = img_text.splitlines()
+		content = np.unique(content).tolist()
+		len_content = len(content)
+		print("largo del contenido: {}".format(len_content))
+		print("contenido: {}".format(content))
+		for c in content:
+			if(c == ' ' or c == ''):
+				continue
+			else: 
+				return True
+		return False
+
+	def delete_images(self, directory, detect_text=True):
 		""" Elimina los directorio dentro de un directorio en específico.
 
 			Parámetros:
@@ -146,26 +161,34 @@ class ImageProcessor:
 			pivot_image = np.asarray(file)
 			pivot_image = self.min_max_norm(pivot_image)
 			rango = len(files)
+			got_text = self.gotText(file)
+			deleted_imgs_dir = directory + current_food + "_eliminados"
 			i = idx
-			while (i < rango):
-				if (not os.path.isdir(directory+files[i])):
-					img_name = files[i]
-					deleted_imgs_dir = directory + current_food + "_eliminados"
-					full_img_name = deleted_imgs_dir + "/" + img_name
-					img_np = np.asarray(pil_files[i])
-					img_np = self.min_max_norm(img_np)
-					result, distance = self.compare_images(pivot_image.flatten(), img_np.flatten())
-					if((idx != i) and (result == True)):
-						if(not os.path.exists(deleted_imgs_dir)):
-							print("Creando directorio {} !".format(deleted_imgs_dir))
-							os.mkdir(deleted_imgs_dir)
-						print("Eliminando imagen: ", full_img_name)
-						shutil.move(directory+img_name, directory+current_food+"_eliminados/"+img_name)
-						#os.remove(directory+img_name) # Si queremos eliminar la imagen descomentar esta línea
-						del files[i]
-						del pil_files[i]
-						rango = len(files)
-				i+=1
+			if (got_text and detect_text):
+				print("Verificando si la imagen {} posee texto texto !".format(files[idx]))
+				if(not os.path.exists(deleted_imgs_dir)):
+					print("Creando directorio {} !".format(deleted_imgs_dir))
+					os.mkdir(deleted_imgs_dir)
+				shutil.move(directory+files[idx], deleted_imgs_dir+"/"+files[idx])
+			else: 
+				while (i < rango):
+					if (not os.path.isdir(directory+files[i])):
+						img_name = files[i]
+						full_img_name = deleted_imgs_dir + "/" + img_name
+						img_np = np.asarray(pil_files[i])
+						img_np = self.min_max_norm(img_np)
+						result, distance = self.compare_images(pivot_image.flatten(), img_np.flatten())
+						if(((idx != i) and (result == True))):
+							if(not os.path.exists(deleted_imgs_dir)):
+								print("Creando directorio {} !".format(deleted_imgs_dir))
+								os.mkdir(deleted_imgs_dir)
+							print("Eliminando imagen: ", img_name)
+							shutil.move(directory+img_name, directory+current_food+"_eliminados/"+img_name)
+							#os.remove(directory+img_name) # Si queremos eliminar la imagen descomentar esta línea
+							del files[i]
+							del pil_files[i]
+							rango = len(files)
+					i+=1
 
 	def delete_repeated_images(self):
 		""" Elimina las imágenes repetidas en un directorio, recorre las carpetas dentro del directorio principal.
@@ -175,10 +198,10 @@ class ImageProcessor:
 		for file in files:
 			element = self.current_dir+file+'/'
 			if (os.path.isdir(element)):
-				self.rename_files(element)
+				#self.rename_files(element)
 				print("Eliminando imágenes del directorio: ", element)
 				self.delete_corrupted_images(element)
-				self.delete_images(element)
+				self.delete_images(element, detect_text=False)
 			else:
 				continue
 
